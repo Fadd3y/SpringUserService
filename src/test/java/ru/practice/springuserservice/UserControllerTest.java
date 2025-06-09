@@ -1,23 +1,19 @@
 package ru.practice.springuserservice;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.persistence.EntityNotFoundException;
 import org.hibernate.JDBCException;
 import org.junit.jupiter.api.Test;
 import org.modelmapper.ModelMapper;
-import org.postgresql.util.PSQLException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
-import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.validation.Errors;
 import ru.practice.springuserservice.controllers.UserController;
 import ru.practice.springuserservice.dto.UserDTO;
-import ru.practice.springuserservice.models.User;
 import ru.practice.springuserservice.services.UserService;
 import ru.practice.springuserservice.util.UserDTOValidator;
 
