@@ -40,8 +40,6 @@ public class UserControllerTest {
 
     @Autowired
     private ObjectMapper objectMapper;
-    @Autowired
-    private ModelMapper modelMapper;
 
     @Test
     void testCreate_whenOk() throws Exception {
