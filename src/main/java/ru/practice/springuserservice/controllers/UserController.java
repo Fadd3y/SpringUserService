@@ -2,6 +2,8 @@ package ru.practice.springuserservice.controllers;
 
 import jakarta.persistence.EntityNotFoundException;
 import jakarta.validation.Valid;
+import org.hibernate.JDBCException;
+import org.hibernate.exception.SQLGrammarException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.BindingResult;
@@ -13,7 +15,6 @@ import ru.practice.springuserservice.services.UserService;
 import ru.practice.springuserservice.util.UserDTOValidator;
 import ru.practice.springuserservice.util.UserResponse;
 
-import java.time.LocalDateTime;
 import java.util.List;
 
 @RestController
@@ -34,10 +35,10 @@ public class UserController {
         validator.validate(userDTO, bindingResult);
         if (bindingResult.hasErrors()) {
             UserResponse response = new UserResponse("Пользователь не сохранен: " + fieldErrorsToString(bindingResult));
-            return new ResponseEntity<>(response, HttpStatus.OK);
+            return new ResponseEntity<>(response, HttpStatus.BAD_REQUEST);
         }
 
-        User user = userService.create(userDTO);
+        UserDTO user = userService.create(userDTO);
         UserResponse response = new UserResponse("Пользователь сохранен под id = " + user.getId());
         return new ResponseEntity<>(response, HttpStatus.OK);
     }
@@ -60,10 +61,10 @@ public class UserController {
         validator.validate(userDTO, bindingResult);
         if (bindingResult.hasErrors()) {
             UserResponse response = new UserResponse("Пользователь не обновлен: " + fieldErrorsToString(bindingResult));
-            return new ResponseEntity<>(response, HttpStatus.OK);
+            return new ResponseEntity<>(response, HttpStatus.BAD_REQUEST);
         }
 
-        User user = userService.update(id, userDTO);
+        UserDTO user = userService.update(id, userDTO);
         UserResponse response = new UserResponse("Пользователь с id = " + user.getId() + " обновлен.");
         return new ResponseEntity<>(response, HttpStatus.OK);
     }
@@ -79,7 +80,14 @@ public class UserController {
     public ResponseEntity<UserResponse> handleException(EntityNotFoundException e) {
         UserResponse response = new UserResponse(
                 e.getMessage());
-        return new ResponseEntity<>(response, HttpStatus.NOT_FOUND);
+        return new ResponseEntity<>(response, HttpStatus.BAD_REQUEST);
+    }
+
+    @ExceptionHandler
+    public ResponseEntity<UserResponse> handleException(JDBCException e) {
+        UserResponse response = new UserResponse(
+                "Ошибка при обращении к базе данных:" + e.getMessage());
+        return new ResponseEntity<>(response, HttpStatus.INTERNAL_SERVER_ERROR);
     }
 
     private String fieldErrorsToString(BindingResult bindingResult) {

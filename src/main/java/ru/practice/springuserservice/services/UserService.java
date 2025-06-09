@@ -26,16 +26,16 @@ public class UserService {
     }
 
     @Transactional
-    public User create(UserDTO userDTO) {
-        User user = modelMapper.map(userDTO, User.class);
+    public UserDTO create(UserDTO userDTO) {
+        User user = convertDTOToUser(userDTO);
         user.setCreatedAt(LocalDateTime.now());
-        return userRepository.save(user);
+        return convertUserToDTO(userRepository.save(user)) ;
     }
 
     public UserDTO read(int id) {
         Optional<User> user  = userRepository.findById(id);
         if (user.isPresent()) {
-            return modelMapper.map(user.get(), UserDTO.class);
+            return convertUserToDTO(user.get());
         } else {
             throw new EntityNotFoundException("Пользователь не найден");
         }
@@ -43,13 +43,18 @@ public class UserService {
 
     public List<UserDTO> readAll() {
         List<User> users = userRepository.findAll();
+
+        if (users.isEmpty()) {
+            throw new EntityNotFoundException("В базе данных нет пользователей.");
+        }
+
         return users.stream()
-                .map((user -> modelMapper.map(user, UserDTO.class)))
+                .map((this::convertUserToDTO))
                 .toList();
     }
 
     @Transactional
-    public User update(int id, UserDTO userDTO) {
+    public UserDTO update(int id, UserDTO userDTO) {
         User userToBeUpdated = userRepository.findById(id)
                 .orElseThrow(() -> new EntityNotFoundException("Пользователь для обновления не найден"));
 
@@ -57,7 +62,7 @@ public class UserService {
         userToBeUpdated.setEmail(userDTO.getEmail());
         userToBeUpdated.setAge(userDTO.getAge());
 
-        return userToBeUpdated;
+        return convertUserToDTO(userToBeUpdated);
     }
 
     @Transactional
@@ -65,5 +70,13 @@ public class UserService {
         userRepository.findById(id)
                 .orElseThrow(() -> new EntityNotFoundException("Пользователь для удаления не найден"));
         userRepository.deleteById(id);
+    }
+
+    private UserDTO convertUserToDTO(User user) {
+        return modelMapper.map(user, UserDTO.class);
+    }
+
+    private User convertDTOToUser(UserDTO userDTO) {
+        return modelMapper.map(userDTO, User.class);
     }
 }
