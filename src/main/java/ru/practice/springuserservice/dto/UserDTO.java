@@ -4,8 +4,8 @@ import jakarta.validation.constraints.*;
 
 public class UserDTO {
 
-    @Max(value = 0, message = "id должен быть либо равен нулю, либо не указан вовсе.")
-    @Min(value = 0, message = "id должен быть либо равен нулю, либо не указан вовсе.")
+    @Max(value = 0, message = "id должен быть либо равен нулю, либо не указан вовсе. ")
+    @Min(value = 0, message = "id должен быть либо равен нулю, либо не указан вовсе. ")
     private int id;
 
     @NotEmpty(message = "Имя не должно быть пустым. ")
@@ -14,11 +14,11 @@ public class UserDTO {
 
     @NotEmpty(message = "Email не должен быть пустым. ")
     @Size(max = 256, min = 1, message = "Количество символов в email должно быть от 1 до 256. ")
-    @Email
+    @Email(message = "Должен быть корректный формат электронной почты. ")
     private String email;
 
-    @Min(value = 0, message = "Возраст должен быть не менее 0 лет")
-    @Max(value = 120, message = "Возраст должен быть не более 120 лет")
+    @Min(value = 0, message = "Возраст должен быть не менее 0 лет. ")
+    @Max(value = 120, message = "Возраст должен быть не более 120 лет. ")
     private int age;
 
     public UserDTO() {
