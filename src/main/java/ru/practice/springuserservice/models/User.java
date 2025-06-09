@@ -1,4 +1,4 @@
-package ru.practice.models;
+package ru.practice.springuserservice.models;
 
 import jakarta.persistence.*;
 

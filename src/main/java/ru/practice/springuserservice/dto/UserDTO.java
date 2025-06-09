@@ -1,17 +1,18 @@
-package ru.practice.dto;
+package ru.practice.springuserservice.dto;
 
-import jakarta.validation.constraints.Email;
-import jakarta.validation.constraints.Max;
-import jakarta.validation.constraints.Min;
-import jakarta.validation.constraints.Size;
+import jakarta.validation.constraints.*;
 
 public class UserDTO {
 
+    @Max(value = 0, message = "id должен быть либо равен нулю, либо не указан вовсе.")
+    @Min(value = 0, message = "id должен быть либо равен нулю, либо не указан вовсе.")
     private int id;
 
+    @NotEmpty(message = "Имя не должно быть пустым. ")
     @Size(max = 256, min = 1, message = "Количество символов в имени должно быть от 1 до 256. ")
     private String name;
 
+    @NotEmpty(message = "Email не должен быть пустым. ")
     @Size(max = 256, min = 1, message = "Количество символов в email должно быть от 1 до 256. ")
     @Email
     private String email;
@@ -23,7 +24,7 @@ public class UserDTO {
     public UserDTO() {
     }
 
-    public UserDTO(String name, String email, int age) {
+    public UserDTO(int id, String name, String email, int age) {
         this.name = name;
         this.email = email;
         this.age = age;
@@ -59,5 +60,15 @@ public class UserDTO {
 
     public void setAge(int age) {
         this.age = age;
+    }
+
+    @Override
+    public String toString() {
+        return "UserDTO{" +
+                "id=" + id +
+                ", name='" + name + '\'' +
+                ", email='" + email + '\'' +
+                ", age=" + age +
+                '}';
     }
 }
