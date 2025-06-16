@@ -3,6 +3,7 @@ package ru.practice.springuserservice.services;
 
 import jakarta.persistence.EntityNotFoundException;
 import org.modelmapper.ModelMapper;
+import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import ru.practice.springuserservice.dto.UserDTO;
@@ -20,16 +21,23 @@ public class UserService {
     private final UserRepository userRepository;
     private final ModelMapper modelMapper;
 
-    public UserService(UserRepository userRepository, ModelMapper modelMapper) {
+    private final KafkaTemplate<String, String> kafkaTemplate;
+
+    public UserService(UserRepository userRepository, ModelMapper modelMapper, KafkaTemplate<String, String> kafkaTemplate) {
         this.userRepository = userRepository;
         this.modelMapper = modelMapper;
+        this.kafkaTemplate = kafkaTemplate;
     }
 
     @Transactional
     public UserDTO create(UserDTO userDTO) {
         User user = convertDTOToUser(userDTO);
         user.setCreatedAt(LocalDateTime.now());
-        return convertUserToDTO(userRepository.save(user)) ;
+
+        User savedUser = userRepository.save(user);
+
+        kafkaTemplate.send("user-created", savedUser.getEmail());
+        return convertUserToDTO(savedUser) ;
     }
 
     public UserDTO read(int id) {
@@ -67,9 +75,11 @@ public class UserService {
 
     @Transactional
     public void delete(int id) {
-        userRepository.findById(id)
+        User user = userRepository.findById(id)
                 .orElseThrow(() -> new EntityNotFoundException("Пользователь для удаления не найден"));
         userRepository.deleteById(id);
+
+        kafkaTemplate.send("user-deleted", user.getEmail());
     }
 
     private UserDTO convertUserToDTO(User user) {

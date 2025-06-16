@@ -7,10 +7,10 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.BindingResult;
 import org.springframework.validation.FieldError;
+import org.springframework.validation.Validator;
 import org.springframework.web.bind.annotation.*;
 import ru.practice.springuserservice.dto.UserDTO;
 import ru.practice.springuserservice.services.UserService;
-import ru.practice.springuserservice.util.UserDTOValidator;
 import ru.practice.springuserservice.util.UserResponse;
 
 import java.util.List;
@@ -20,15 +20,14 @@ import java.util.List;
 public class UserController {
 
     private final UserService userService;
-    private final UserDTOValidator validator;
+    private final Validator validator;
 
-    public UserController(UserService userService, UserDTOValidator validator) {
+    public UserController(UserService userService, Validator userDTOValidator) {
         this.userService = userService;
-        this.validator = validator;
+        this.validator = userDTOValidator;
     }
 
     @PostMapping
-    @ResponseBody
     public ResponseEntity<UserResponse> create(@RequestBody @Valid UserDTO userDTO, BindingResult bindingResult) {
         validator.validate(userDTO, bindingResult);
         if (bindingResult.hasErrors()) {
@@ -68,7 +67,7 @@ public class UserController {
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<UserResponse> delete(@PathVariable int id) {
+    public ResponseEntity<UserResponse> delete(@PathVariable int id)  {
         userService.delete(id);
         UserResponse response = new UserResponse("Пользователь с id = " + id + " удален.");
         return new ResponseEntity<>(response, HttpStatus.OK);

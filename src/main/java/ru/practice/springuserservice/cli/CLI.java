@@ -4,13 +4,11 @@ import jakarta.persistence.EntityNotFoundException;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.stereotype.Component;
 import org.springframework.validation.BeanPropertyBindingResult;
-import org.springframework.validation.BindingResult;
 import org.springframework.validation.Errors;
 import org.springframework.validation.FieldError;
+import org.springframework.validation.Validator;
 import ru.practice.springuserservice.dto.UserDTO;
-import ru.practice.springuserservice.models.User;
 import ru.practice.springuserservice.services.UserService;
-import ru.practice.springuserservice.util.UserDTOValidator;
 
 import java.util.List;
 import java.util.Scanner;
@@ -20,12 +18,12 @@ public class CLI implements CommandLineRunner {
 
     private final Scanner scanner;
     private final UserService userService;
-    private final UserDTOValidator validator;
+    private final Validator validator;
 
-    public CLI(UserService userService, UserDTOValidator validator) {
+    public CLI(UserService userService, Validator userDTOValidator) {
         this.scanner = new Scanner(System.in);
         this.userService = userService;
-        this.validator = validator;
+        this.validator = userDTOValidator;
     }
 
     @Override
