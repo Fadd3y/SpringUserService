@@ -5,3 +5,27 @@
         spring.datasource.username=postgres
         spring.datasource.password=admin
 ```
+## API
+### SpringUserService http://localhost:8080
+
+- Создание пользователя          __POST /api/users__
+```
+{
+    "name": "example",
+    "email": "example@gmail.com",
+    "age": 17
+}
+```
+- Получение пользователя         __GET /api/users/{id}__
+
+- Получение всех пользователей   __GET /api/users__     
+
+- Обновление полей пользователя  __PATCH /api/users/{id}__
+```
+{
+    "name": "example",
+    "email": "example@gmail.com",
+    "age": 17
+}
+```
+- Удаление пользователя          __DELETE /api/users/{id}__
