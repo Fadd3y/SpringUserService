@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Show user</title>
+</head>
+<body>
+<div th:if="${user != null}">
+    <p id="name" th:text="'Имя: ' + ${user.getName()}"></p>
+    <p id="email" th:text="'Email: ' + ${user.getEmail()}"></p>
+    <p id="age" th:text="'Возраст: ' + ${user.getAge()}"></p>
+    <form th:method="DELETE" th:action="@{/users/{id} (id=${user.getId()})}">
+        <input type="submit" value="Удалить">
+    </form>
+    <form th:action="@{/users/{id}/update (id=${user.getId()})}">
+        <input type="submit" value="Изменить">
+    </form>
+</div>
+<p th:if="${user == null}">Пользователь не найден</p>
+<form th:action="@{/homepage}">
+    <input type="submit" value="На главную">
+</form>
+</body>
+</html>

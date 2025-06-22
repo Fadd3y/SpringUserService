@@ -4,7 +4,6 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.persistence.EntityNotFoundException;
 import org.hibernate.JDBCException;
 import org.junit.jupiter.api.Test;
-import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
@@ -12,7 +11,7 @@ import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.validation.Errors;
-import ru.practice.springuserservice.controllers.UserController;
+import ru.practice.springuserservice.controllers.UserRESTController;
 import ru.practice.springuserservice.dto.UserDTO;
 import ru.practice.springuserservice.services.UserService;
 import ru.practice.springuserservice.util.UserDTOValidator;
@@ -25,9 +24,9 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-@WebMvcTest(UserController.class)
+@WebMvcTest(UserRESTController.class)
 @AutoConfigureMockMvc
-public class UserControllerTest {
+public class UserRESTControllerTest {
 
     @Autowired
     private MockMvc mockMvc;

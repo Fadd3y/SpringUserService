@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Create</title>
+</head>
+<body>
+<form th:method="POST" th:action="@{/users}" th:object="${user}">
+    <label for="name">Имя: </label>
+    <input id="name" type="text" th:field="*{name}">
+    <div style="color: orangered" th:if="${#fields.hasErrors('name')}" th:errors="*{name}"></div>
+    <br>
+    <label for="email">Email: </label>
+    <input id="email" type="text" th:field="*{email}">
+    <div style="color: orangered" th:if="${#fields.hasErrors('email')}" th:errors="*{email}"></div>
+    <br>
+    <label for="age">Возраст: </label>
+    <input id="age" type="text" th:field="*{age}">
+    <div style="color: orangered" th:if="${#fields.hasErrors('age')}" th:errors="*{age}"></div>
+    <br>
+    <input type="submit" value="Создать">
+</form>
+<form th:action="@{/homepage}">
+    <input type="submit" value="На главную">
+</form>
+</body>
+</html>

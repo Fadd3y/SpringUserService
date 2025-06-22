@@ -1,0 +1,19 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Show all users</title>
+</head>
+<body>
+
+<div th:each="user : ${users}">
+    <a th:href="@{/users/{id} (id = ${user.getId()})}" th:text="${user.getName()}"></a>
+    <br>
+</div>
+
+<p th:if="${users.isEmpty()}">В базе данных нет пользователей</p>
+<form th:action="@{/homepage}">
+    <input type="submit" value="На главную">
+</form>
+</body>
+</html>
