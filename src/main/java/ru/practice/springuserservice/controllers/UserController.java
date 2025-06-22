@@ -2,21 +2,19 @@ package ru.practice.springuserservice.controllers;
 
 import jakarta.persistence.EntityNotFoundException;
 import jakarta.validation.Valid;
-import org.hibernate.JDBCException;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
+import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
-import org.springframework.validation.FieldError;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 import ru.practice.springuserservice.dto.UserDTO;
 import ru.practice.springuserservice.services.UserService;
 import ru.practice.springuserservice.util.UserDTOValidator;
-import ru.practice.springuserservice.util.UserResponse;
 
 import java.util.List;
 
-@RestController
-@RequestMapping("/api/users")
+@Controller
+@RequestMapping("")
 public class UserController {
 
     private final UserService userService;
@@ -27,76 +25,85 @@ public class UserController {
         this.validator = validator;
     }
 
-    @PostMapping
-    @ResponseBody
-    public ResponseEntity<UserResponse> create(@RequestBody @Valid UserDTO userDTO, BindingResult bindingResult) {
+    @GetMapping("/homepage")
+    public String startingPage() {
+        return "homepage";
+    }
+
+    @GetMapping("/users")
+    public String showAllUsersPage(Model model) {
+        try {
+            model.addAttribute("users", userService.readAll());
+        } catch (EntityNotFoundException e) {
+            model.addAttribute("users", List.of());
+        }
+        return "showAll";
+    }
+
+    @GetMapping("/users/{id}")
+    public String showUserPage(@PathVariable int id, Model model) {
+        try {
+            model.addAttribute("user", userService.read(id));
+        } catch (Exception e) {
+            model.addAttribute("user", null);
+        }
+        return "show";
+    }
+
+    @GetMapping("/users/new")
+    public String createUserForm(Model model) {
+        if (!model.containsAttribute("user")) {
+            model.addAttribute("user", new UserDTO());
+        }
+        return "create";
+    }
+
+    @GetMapping("/users/{id}/update")
+    public String updateUserPage(@PathVariable int id, Model model) {
+        if (!model.containsAttribute("user")) {
+            model.addAttribute("user", userService.read(id));
+        } 
+
+        return "update";
+    }
+
+    @PostMapping("/users")
+    public String createUser(@ModelAttribute("user") @Valid UserDTO userDTO,
+                             BindingResult bindingResult,
+                             RedirectAttributes redirectAttributes) {
         validator.validate(userDTO, bindingResult);
+
         if (bindingResult.hasErrors()) {
-            UserResponse response = new UserResponse("Пользователь не сохранен: " + fieldErrorsToString(bindingResult));
-            return new ResponseEntity<>(response, HttpStatus.BAD_REQUEST);
+            redirectAttributes.addFlashAttribute("org.springframework.validation.BindingResult.user", bindingResult);
+            redirectAttributes.addFlashAttribute("user", userDTO);
+            return "redirect:/users/new";
         }
 
-        UserDTO user = userService.create(userDTO);
-        UserResponse response = new UserResponse("Пользователь сохранен под id = " + user.getId());
-        return new ResponseEntity<>(response, HttpStatus.OK);
+        userService.create(userDTO);
+        return "redirect:/homepage";
     }
 
-    @GetMapping("/{id}")
-    public UserDTO read(@PathVariable int id) {
-        return userService.read(id);
-    }
-
-    @GetMapping("")
-    public List<UserDTO> readAll() {
-        return userService.readAll();
-    }
-
-    @PatchMapping("/{id}")
-    public ResponseEntity<UserResponse> update(@PathVariable int id,
-                                               @RequestBody @Valid UserDTO userDTO,
-                                               BindingResult bindingResult) {
+    @PatchMapping("/users/{id}")
+    public String updateUser(@PathVariable int id,
+                             @ModelAttribute("user") @Valid UserDTO userDTO,
+                             BindingResult bindingResult,
+                             RedirectAttributes redirectAttributes) {
         userDTO.setId(id);
         validator.validate(userDTO, bindingResult);
+
         if (bindingResult.hasErrors()) {
-            UserResponse response = new UserResponse("Пользователь не обновлен: " + fieldErrorsToString(bindingResult));
-            return new ResponseEntity<>(response, HttpStatus.BAD_REQUEST);
+            redirectAttributes.addFlashAttribute("org.springframework.validation.BindingResult.user", bindingResult);
+            redirectAttributes.addFlashAttribute("user", userDTO);
+            return "redirect:/users/{id}/update";
         }
 
-        UserDTO user = userService.update(id, userDTO);
-        UserResponse response = new UserResponse("Пользователь с id = " + user.getId() + " обновлен.");
-        return new ResponseEntity<>(response, HttpStatus.OK);
+        userService.update(id, userDTO);
+        return "redirect:/users/{id}";
     }
 
-    @DeleteMapping("/{id}")
-    public ResponseEntity<UserResponse> delete(@PathVariable int id) {
+    @DeleteMapping("/users/{id}")
+    public String deleteUser(@PathVariable int id) {
         userService.delete(id);
-        UserResponse response = new UserResponse("Пользователь с id = " + id + " удален.");
-        return new ResponseEntity<>(response, HttpStatus.OK);
-    }
-
-    @ExceptionHandler
-    public ResponseEntity<UserResponse> handleException(EntityNotFoundException e) {
-        UserResponse response = new UserResponse(
-                e.getMessage());
-        return new ResponseEntity<>(response, HttpStatus.BAD_REQUEST);
-    }
-
-    @ExceptionHandler
-    public ResponseEntity<UserResponse> handleException(JDBCException e) {
-        UserResponse response = new UserResponse(
-                "Ошибка при обращении к базе данных:" + e.getMessage());
-        return new ResponseEntity<>(response, HttpStatus.INTERNAL_SERVER_ERROR);
-    }
-
-    private String fieldErrorsToString(BindingResult bindingResult) {
-        StringBuilder builder = new StringBuilder();
-        for (FieldError fieldError : bindingResult.getFieldErrors()) {
-            builder
-                    .append(fieldError.getField())
-                    .append(" error: ")
-                    .append(fieldError.getDefaultMessage())
-                    .append("; ");
-        }
-        return builder.toString();
+        return "redirect:/users";
     }
 }
