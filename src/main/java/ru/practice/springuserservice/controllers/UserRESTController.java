@@ -1,5 +1,9 @@
 package ru.practice.springuserservice.controllers;
 
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import jakarta.persistence.EntityNotFoundException;
 import jakarta.validation.Valid;
 import org.hibernate.JDBCException;
@@ -27,8 +31,12 @@ public class UserRESTController {
         this.validator = validator;
     }
 
+    @Operation(summary = "Создание пользователя")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Пользователь создан"),
+            @ApiResponse(responseCode = "400", description = "Ошибка валидации")
+    })
     @PostMapping
-    @ResponseBody
     public ResponseEntity<UserResponse> create(@RequestBody @Valid UserDTO userDTO, BindingResult bindingResult) {
         validator.validate(userDTO, bindingResult);
         if (bindingResult.hasErrors()) {
@@ -41,16 +49,31 @@ public class UserRESTController {
         return new ResponseEntity<>(response, HttpStatus.OK);
     }
 
+    @Operation(summary = "Получение пользователя по id")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Пользователь найден"),
+            @ApiResponse(responseCode = "400", description = "Пользователь не найден")
+    })
     @GetMapping("/{id}")
     public UserDTO read(@PathVariable int id) {
         return userService.read(id);
     }
 
+    @Operation(summary = "Получение всех пользователей")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Пользователи найдены"),
+            @ApiResponse(responseCode = "400", description = "Пользователи не найдены")
+    })
     @GetMapping("")
     public List<UserDTO> readAll() {
         return userService.readAll();
     }
 
+    @Operation(summary = "Обновление пользователя")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Пользователь обновлен"),
+            @ApiResponse(responseCode = "400", description = "Пользователь не обновлен")
+    })
     @PatchMapping("/{id}")
     public ResponseEntity<UserResponse> update(@PathVariable int id,
                                                @RequestBody @Valid UserDTO userDTO,
@@ -67,6 +90,11 @@ public class UserRESTController {
         return new ResponseEntity<>(response, HttpStatus.OK);
     }
 
+    @Operation(summary = "Удаление пользователя")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Пользователь удален"),
+            @ApiResponse(responseCode = "400", description = "Пользователь для удаления не найден")
+    })
     @DeleteMapping("/{id}")
     public ResponseEntity<UserResponse> delete(@PathVariable int id) {
         userService.delete(id);
