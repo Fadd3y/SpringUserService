@@ -73,7 +73,7 @@ public class UserRESTController {
             @ApiResponse(responseCode = "200", description = "Пользователь обновлен"),
             @ApiResponse(responseCode = "400", description = "Пользователь не обновлен")
     })
-    @PatchMapping("/{id}")
+    @PutMapping("/{id}")
     public ResponseEntity<UserResponse> update(@PathVariable int id,
                                                @RequestBody @Valid UserDTO userDTO,
                                                BindingResult bindingResult) {
