@@ -50,7 +50,7 @@ public class UserController {
         return userService.readAll();
     }
 
-    @PatchMapping("/{id}")
+    @PutMapping("/{id}")
     public ResponseEntity<UserResponse> update(@PathVariable int id,
                                                @RequestBody @Valid UserDTO userDTO,
                                                BindingResult bindingResult) {
