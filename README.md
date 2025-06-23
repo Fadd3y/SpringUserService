@@ -46,7 +46,7 @@ https://github.com/Fadd3y/NotificationService
 
 - Получение всех пользователей   __GET /api/users__     
 
-- Обновление полей пользователя  __PATCH /api/users/{id}__
+- Обновление полей пользователя  __PUT /api/users/{id}__
 ```
 {
     "name": "example",
