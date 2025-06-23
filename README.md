@@ -6,6 +6,7 @@
         spring.datasource.password=admin
 ```
 ## API
+Для теста UserService http://localhost:8080/swagger-ui/index.html#/
 ### SpringUserService http://localhost:8080
 
 - Создание пользователя          __POST /api/users__
